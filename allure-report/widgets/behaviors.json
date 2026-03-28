@@ -1,0 +1,1 @@
+{"total":2,"items":[{"uid":"4ec5556c5943c1cf8c1202699262000c","name":"Основная функциональность","statistic":{"failed":0,"broken":0,"skipped":0,"passed":10,"unknown":0,"total":10}},{"uid":"143ab7b7d09558091a8af224c7fcab39","name":"Раздел «Лента заказов»","statistic":{"failed":0,"broken":0,"skipped":0,"passed":6,"unknown":0,"total":6}}]}
