@@ -17,6 +17,32 @@ class BasePage:
     def get_current_url(self):
         return self.driver.current_url
 
+    @allure.step("Обновить страницу")
+    def refresh_page(self):
+        self.driver.refresh()
+
+    @allure.step("Подождать пользовательское условие")
+    def wait_until(self, condition, timeout=20, poll_frequency=0.5):
+        return WebDriverWait(
+            self.driver,
+            timeout,
+            poll_frequency=poll_frequency
+        ).until(condition)
+
+    @allure.step("Найти элемент")
+    def find_element(self, locator, timeout=20):
+        return WebDriverWait(self.driver, timeout).until(
+            EC.presence_of_element_located(locator)
+        )
+
+    @allure.step("Найти элементы")
+    def find_elements(self, locator):
+        return self.driver.find_elements(*locator)
+
+    @allure.step("Выполнить JavaScript")
+    def execute_script(self, script, *args):
+        return self.driver.execute_script(script, *args)
+
     @allure.step("Подождать видимость элемента")
     def wait_for_element_visible(self, locator, timeout=20):
         return WebDriverWait(self.driver, timeout).until(
@@ -55,9 +81,13 @@ class BasePage:
         element.send_keys(text)
 
     @allure.step("Прокрутить к элементу")
-    def scroll_to_element(self, locator):
-        element = self.driver.find_element(*locator)
-        self.driver.execute_script("arguments[0].scrollIntoView();", element)
+    def scroll_to_element(self, locator, block="start", timeout=20):
+        element = self.find_element(locator, timeout)
+        self.execute_script(
+            "arguments[0].scrollIntoView({block: arguments[1]});",
+            element,
+            block
+        )
 
     @allure.step("Перетащить элемент")
     def drag_and_drop_element(self, source, target):
@@ -65,6 +95,6 @@ class BasePage:
 
     @allure.step("Подождать текст в атрибуте")
     def wait_for_attribute(self, locator, attribute, value, timeout=10):
-        WebDriverWait(self.driver, timeout).until(
+        return WebDriverWait(self.driver, timeout).until(
             EC.text_to_be_present_in_element_attribute(locator, attribute, value)
         )

@@ -1,7 +1,5 @@
 import allure
 
-from selenium.webdriver.support.ui import WebDriverWait
-
 from urls import URL
 from pages.base_page import BasePage
 from locators.main_page_locators import MainPageLocators
@@ -68,26 +66,26 @@ class MainPage(BasePage):
         target = self.wait_for_element_visible(MainPageLocators.BASKET_LIST)
         self.drag_and_drop_element(source, target)
 
-        WebDriverWait(self.driver, 10).until(
-            lambda driver: int(driver.find_element(*MainPageLocators.INGREDIENT_COUNTER).text) > 0
+        self.wait_until(
+            lambda _: int(self.get_text_of_element(MainPageLocators.INGREDIENT_COUNTER)) > 0,
+            timeout=10
         )
 
     @allure.step("Оформить заказ")
     def place_order(self):
         self.wait_for_overlay_close()
         self.wait_for_element_hide(MainPageLocators.OVERLAY_ANIMATION)
-
-        order_button = self.wait_for_element_clickable(MainPageLocators.ORDER_BUTTON, timeout=20)
-        self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", order_button)
-        order_button.click() 
+        self.scroll_to_element(MainPageLocators.ORDER_BUTTON, block="center")
+        self.click_on_element(MainPageLocators.ORDER_BUTTON)
 
     @allure.step("Получить реальный номер заказа")
     def get_order_number(self):
         self.wait_for_element_hide(MainPageLocators.OVERLAY_ANIMATION)
         self.wait_for_element_visible(MainPageLocators.ORDER_ID)
 
-        WebDriverWait(self.driver, 20).until(
-            lambda driver: driver.find_element(*MainPageLocators.ORDER_ID).text != "9999"
+        self.wait_until(
+            lambda _: self.get_text_of_element(MainPageLocators.ORDER_ID) != "9999",
+            timeout=20
         )
 
         order_number = self.get_text_of_element(MainPageLocators.ORDER_ID)
